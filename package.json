@@ -1,0 +1,17 @@
+{
+  "name": "whatsapp-ai-portal",
+  "version": "1.0.0",
+  "description": "Cloud WhatsApp linking and AI auto-reply portal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "googleapis": "^140.0.1",
+    "qrcode": "^1.5.4",
+    "whatsapp-web.js": "^1.34.7"
+  }
+}
