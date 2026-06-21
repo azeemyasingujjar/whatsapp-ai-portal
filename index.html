@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sender Portal</title>
+  <link rel="icon" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main id="loginScreen" class="auth-shell">
+    <section class="auth-panel">
+      <div class="logo-mark">
+        <img src="/assets/favicon.png" alt="">
+      </div>
+      <p class="muted center">Login to Access the Dashboard</p>
+      <form id="loginForm" class="form-stack">
+        <label>
+          <span>Email Address</span>
+          <input id="loginEmail" type="email" autocomplete="email" placeholder="name@domain.com" required>
+        </label>
+        <label>
+          <span class="label-row"><span>Password</span><button class="link-button" id="forgotBtn" type="button">Forgot Password</button></span>
+          <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password" required>
+        </label>
+        <div id="forgotBox" class="notice hidden"></div>
+        <button class="primary wide" type="submit">SIGN IN</button>
+        <p id="loginError" class="error-text"></p>
+      </form>
+    </section>
+    <section class="auth-image"></section>
+  </main>
+
+  <main id="dashboard" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="/assets/favicon.png" alt="">
+        <div>
+          <strong>Sender</strong>
+          <span>Cloud Portal</span>
+        </div>
+      </div>
+      <nav class="nav-list">
+        <button data-view="messages" class="active">Messenger</button>
+        <button data-view="actions">Actions</button>
+        <button data-view="whatsapp">WhatsApp Scan</button>
+        <button data-view="ai">API Builder</button>
+      </nav>
+      <div class="side-footer">
+        <span id="userName">User</span>
+        <button id="logoutBtn" class="ghost">Logout</button>
+      </div>
+    </aside>
+
+    <section class="content">
+      <header class="topbar">
+        <div class="top-actions">
+          <button class="dark">CLOUD BASED</button>
+          <button class="green" id="connectedCount">0</button>
+          <button class="red" id="failedCount">0</button>
+          <button class="dark icon-only" id="refreshBtn">Refresh</button>
+        </div>
+        <div id="waStatusPill" class="status-pill">Offline</div>
+      </header>
+
+      <section id="view-whatsapp" class="view">
+        <div class="page-head">
+          <div>
+            <span class="eyebrow">HOSTS</span>
+            <h1>WHATSAPP SCAN</h1>
+          </div>
+          <div class="head-actions">
+            <select id="waAccountSelect" class="compact-select"></select>
+            <button class="dark" id="addWaAccount" type="button">NEW ACCOUNT</button>
+            <button class="dark" id="editWaSettings">Settings</button>
+            <button class="dark" id="openLinkModal">ADD ACCOUNT</button>
+          </div>
+        </div>
+        <div class="metric-grid">
+          <article>
+            <span>Logged In</span>
+            <strong id="waPhone">Not linked</strong>
+          </article>
+          <article>
+            <span>Status</span>
+            <strong id="waStatusText">Offline</strong>
+          </article>
+          <article>
+            <span>Receive Chats</span>
+            <strong id="receiveChatsText">Enable</strong>
+          </article>
+          <article>
+            <span>Send Interval</span>
+            <strong id="intervalText">1 - 5 sec</strong>
+          </article>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Account</th>
+                <th>WhatsApp ID</th>
+                <th>Status</th>
+                <th>Attached API</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody id="whatsappRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-ai" class="view">
+        <div class="page-head">
+          <div>
+            <span class="eyebrow">ARTIFICIAL INTELLIGENCE</span>
+            <h1>API BUILDER</h1>
+          </div>
+          <button class="dark" id="openAiModal">ADD API</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Created</th>
+                <th>Name</th>
+                <th>Model</th>
+                <th>API Key</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody id="aiRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-actions" class="view">
+        <div class="page-head">
+          <div>
+            <span class="eyebrow">TOOLS</span>
+            <h1>ACTIONS</h1>
+          </div>
+          <button class="dark" id="openActionModal">AUTOREPLY</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Created</th>
+                <th>Name</th>
+                <th>Details</th>
+                <th>Enabled</th>
+                <th>Options</th>
+              </tr>
+            </thead>
+            <tbody id="actionRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-messages" class="view active">
+        <div class="page-head">
+          <div>
+            <span class="eyebrow">CHATS</span>
+            <h1>MESSENGER</h1>
+          </div>
+          <div class="head-actions">
+            <select id="messageAccountSelect" class="compact-select"></select>
+            <button class="dark" id="refreshMessages">REFRESH</button>
+          </div>
+        </div>
+        <div class="messenger-accounts" id="messengerAccountTabs"></div>
+        <div class="messenger">
+          <aside class="chat-list" id="chatList"></aside>
+          <section class="chat-panel">
+            <div id="chatTitle" class="chat-title">Select a chat</div>
+            <div id="messageList" class="message-list"></div>
+            <div id="attachmentPreview" class="attachment-preview hidden"></div>
+            <form id="sendForm" class="send-form">
+              <input id="mediaInput" type="file" class="hidden" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
+              <button class="tool-button" id="attachBtn" type="button" title="Attach file">+</button>
+              <button class="tool-button" id="voiceBtn" type="button" title="Record voice">Mic</button>
+              <input id="sendText" type="text" placeholder="Type a message">
+              <button class="primary" type="submit">SEND</button>
+            </form>
+          </section>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <section class="modal" id="linkModal">
+      <header>
+        <h2>Add Account</h2>
+        <button class="close-modal" type="button">x</button>
+      </header>
+      <div class="modal-body center">
+        <p class="muted">Connect your WhatsApp by scanning the QRCode via LINK A DEVICE.</p>
+        <strong id="linkAccountName">Default WhatsApp</strong>
+        <div id="qrBox" class="qr-box">QR not ready</div>
+        <button class="primary" id="startLinkBtn" type="button">LINK ACCOUNT</button>
+      </div>
+    </section>
+
+    <section class="modal" id="settingsModal">
+      <header>
+        <h2>Edit WhatsApp</h2>
+        <button class="close-modal" type="button">x</button>
+      </header>
+      <form id="settingsForm" class="modal-grid">
+        <input type="hidden" name="accountId">
+        <label class="span-2">
+          <span>Account Name</span>
+          <input name="name" type="text" placeholder="Shop WhatsApp 1">
+        </label>
+        <label>
+          <span>Receive Chats</span>
+          <select name="receiveChats">
+            <option value="true">ENABLE</option>
+            <option value="false">DISABLE</option>
+          </select>
+        </label>
+        <label>
+          <span>Random Send Interval</span>
+          <select name="randomInterval">
+            <option value="true">ENABLE</option>
+            <option value="false">DISABLE</option>
+          </select>
+        </label>
+        <label>
+          <span>Send Interval Min</span>
+          <input name="minInterval" type="number" min="0" value="1">
+        </label>
+        <label>
+          <span>Send Interval Max</span>
+          <input name="maxInterval" type="number" min="0" value="5">
+        </label>
+        <footer>
+          <button class="primary" type="submit">SUBMIT</button>
+        </footer>
+      </form>
+    </section>
+
+    <section class="modal large" id="aiModal">
+      <header>
+        <h2 id="aiModalTitle">Add AI API Key</h2>
+        <button class="close-modal" type="button">x</button>
+      </header>
+      <form id="aiForm" class="modal-grid">
+        <input type="hidden" name="id">
+        <label>
+          <span>Name</span>
+          <input name="name" type="text" required>
+        </label>
+        <label>
+          <span>Provider</span>
+          <select name="provider" id="aiProviderSelect"></select>
+        </label>
+        <label>
+          <span>API Style</span>
+          <select name="apiStyle" id="aiStyleSelect">
+            <option value="NATIVE">NATIVE</option>
+            <option value="OPENAI_RESPONSES">OPENAI RESPONSES</option>
+            <option value="OPENAI_COMPATIBLE">OPENAI COMPATIBLE</option>
+          </select>
+        </label>
+        <label class="span-2">
+          <span>API Base URL</span>
+          <input name="apiBaseUrl" type="url" placeholder="Optional endpoint/base URL">
+        </label>
+        <label class="span-2">
+          <span>Initial Prompt</span>
+          <textarea name="initialPrompt" rows="5"></textarea>
+        </label>
+        <label class="span-2">
+          <span>Post Prompt</span>
+          <textarea name="postPrompt" rows="4"></textarea>
+        </label>
+        <label>
+          <span>Vision</span>
+          <select name="vision">
+            <option value="true">ENABLE</option>
+            <option value="false">DISABLE</option>
+          </select>
+        </label>
+        <label>
+          <span>Transcription</span>
+          <select name="transcription">
+            <option value="true">ENABLE</option>
+            <option value="false">DISABLE</option>
+          </select>
+        </label>
+        <label>
+          <span>Model</span>
+          <select name="model" id="aiModelSelect"></select>
+        </label>
+        <label>
+          <span>Max Tokens</span>
+          <input name="maxTokens" type="number" value="512">
+        </label>
+        <label>
+          <span>History Threshold</span>
+          <input name="historyThreshold" type="number" value="5000">
+        </label>
+        <label>
+          <span>API Key</span>
+          <input name="apiKey" type="password" placeholder="Leave empty to keep saved key">
+        </label>
+        <footer class="span-2">
+          <button class="primary" type="submit">SUBMIT</button>
+        </footer>
+      </form>
+    </section>
+
+    <section class="modal large" id="actionModal">
+      <header>
+        <h2 id="actionModalTitle">Edit Reply Action</h2>
+        <button class="close-modal" type="button">x</button>
+      </header>
+      <form id="actionForm" class="modal-grid">
+        <input type="hidden" name="id">
+        <label>
+          <span>Name</span>
+          <input name="name" type="text" required>
+        </label>
+        <label>
+          <span>Source</span>
+          <select name="source" disabled>
+            <option>WHATSAPP</option>
+          </select>
+        </label>
+        <label>
+          <span>Match Type</span>
+          <select name="matchType" disabled>
+            <option>ARTIFICIAL INTELLIGENCE</option>
+          </select>
+        </label>
+        <label>
+          <span>Account</span>
+          <select name="accountId" id="actionAccountSelect"></select>
+        </label>
+        <label>
+          <span>AI API Key</span>
+          <select name="aiKeyId" id="actionAiKeySelect"></select>
+        </label>
+        <label>
+          <span>Priority</span>
+          <select name="priority">
+            <option value="true">YES</option>
+            <option value="false">NO</option>
+          </select>
+        </label>
+        <label>
+          <span>Group Trigger</span>
+          <select name="groupTrigger">
+            <option value="false">DISABLE</option>
+            <option value="true">ENABLE</option>
+          </select>
+        </label>
+        <label>
+          <span>Enabled</span>
+          <select name="enabled">
+            <option value="true">YES</option>
+            <option value="false">NO</option>
+          </select>
+        </label>
+        <div class="warning-box span-2">
+          The AI conversations related to this autoreply will use the selected API key after you save the changes.
+        </div>
+        <footer class="span-2">
+          <button class="primary" type="submit">SUBMIT</button>
+        </footer>
+      </form>
+    </section>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
